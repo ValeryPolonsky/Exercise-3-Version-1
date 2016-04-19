@@ -1,5 +1,8 @@
 package algorithms.mazeGenerators;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+
 /**
  * Creates a new empty maze.<br>
  * Maze represented as three dimensional array of integer values.<br>
@@ -73,6 +76,137 @@ public class Maze3d implements Maze{
 		}
 			
 	}
+	
+	/**
+	 * Constructor that creates a 3D maze according to given byte array
+	 * @param data - Given byte array
+	 * @throws UnsupportedEncodingException 
+	 */
+	public Maze3d(byte[]data) throws UnsupportedEncodingException
+	{
+		//Inserts: ( length;height;width;start_p;goal_p ) to the array with ";" separator
+		String sptr=";";
+		byte[]separator=sptr.getBytes("UTF-8");
+		byte[]temp;
+		int startIndex=0;
+		int endIndex=indexOf(data,separator,startIndex);
+		temp=null;
+		temp=Arrays.copyOfRange(data,startIndex,endIndex);
+		String str = new String(temp, "US-ASCII");
+		int length1=Integer.parseInt(str);
+		
+		startIndex=endIndex+1;
+		endIndex=indexOf(data,separator,startIndex);
+		temp=null;
+		temp=Arrays.copyOfRange(data,startIndex,endIndex);
+		str = new String(temp, "US-ASCII");
+		int height1=Integer.parseInt(str);
+		
+		startIndex=endIndex+1;
+		endIndex=indexOf(data,separator,startIndex);
+		temp=null;
+		temp=Arrays.copyOfRange(data,startIndex,endIndex);
+		str = new String(temp, "US-ASCII");
+		int width1=Integer.parseInt(str);
+		
+		length=length1;
+		height=height1;
+		width=width1;
+		
+		maze3d=new int[length][height][width];//Generates a 3 dimensional array, that
+		//will express a 3D maze
+		
+		//Setting all values of the array to zero
+		/*for(int i=0;i<length;i++)
+		{
+			for(int j=0;j<height;j++)
+			{
+				for(int k=0;k<width;k++)
+				{
+					maze3d[i][j][k]=0;
+				}
+			}
+		}
+		
+		//Setting first and last x/y planes to 1, 
+		for(int i=0;i<length;i++)
+		{
+			for(int j=0;j<height;j++)
+			{
+				maze3d[i][j][0]=1;
+				maze3d[i][j][width-1]=1;
+			}
+		}
+		
+		//Setting first and last x/z planes to 1, 
+		for(int i=0;i<length;i++)
+		{
+			for(int j=0;j<width;j++)
+			{
+				maze3d[i][0][j]=1;
+				maze3d[i][height-1][j]=1;
+			}
+		}
+		
+		//Setting first and last y/z planes to 1, 
+		for(int i=0;i<height;i++)
+		{
+			for(int j=0;j<width;j++)
+			{
+				maze3d[0][i][j]=1;
+				maze3d[length-1][i][j]=1;
+			}
+		}*/
+		
+		
+		startIndex=endIndex+1;
+		endIndex=indexOf(data,separator,startIndex);
+		temp=null;
+		temp=Arrays.copyOfRange(data,startIndex,endIndex);
+		Position start_p1=new Position();
+		str = new String(temp, "US-ASCII");
+		start_p=start_p1.toPosition(str);
+		
+		startIndex=endIndex+1;
+		endIndex=indexOf(data,separator,startIndex);
+		temp=null;
+		temp=Arrays.copyOfRange(data,startIndex,endIndex);
+		Position goal_p1=new Position();
+		str = new String(temp, "US-ASCII");
+		goal_p=goal_p1.toPosition(str);
+		
+		startIndex=endIndex+1;
+		int m=startIndex;
+		for(int i=0;i<height;i++)
+		{
+			for(int j=0;j<length;j++)
+			{
+				for(int k=0;k<width;k++)
+				{
+					maze3d[j][i][k]=data[m];
+					m++;
+				}
+			}
+		}
+	}
+	
+	private int indexOf(byte[] outerArray, byte[] smallerArray, int startIndex) 
+	{
+	    for(int i = startIndex; i < outerArray.length - smallerArray.length+1; ++i) 
+	    {
+	        boolean found = true;
+	        for(int j = 0; j < smallerArray.length; ++j) 
+	        {
+	           if (outerArray[i+j] != smallerArray[j]) 
+	           {
+	               found = false;
+	               break;
+	           }
+	        }
+	        if (found) return i;
+	    }
+	    return -1;  
+	}  
 	
 	/**
 	 * Sets the given value to the specified position in the maze
@@ -318,5 +452,85 @@ public class Maze3d implements Maze{
     		}
     	}
     	return crossSection;
+    }
+    
+    /**
+     * Converts the maze3D to bytes array and all needed data to build it afterwards
+     * @return Array of bytes
+     * @throws UnsupportedEncodingException 
+     */
+    public byte[] toByteArray() throws UnsupportedEncodingException
+    {
+    	int k=0;//Variable to save the start index for inserting data to the bytes array 
+    	String separator=";";//Separator for separation of different data types
+    	int totalLength=0;//Saves the total length of the bytes array
+    	
+    	//Calculates the total length of a new array
+    	totalLength=length*height*width;
+    	totalLength+=start_p.toString().getBytes("UTF-8").length;
+    	totalLength+=goal_p.toString().getBytes("UTF-8").length;
+    	totalLength+=Integer.toString(length).getBytes("UTF-8").length;
+    	totalLength+=Integer.toString(height).getBytes("UTF-8").length;
+    	totalLength+=Integer.toString(width).getBytes("UTF-8").length;
+    	totalLength+=separator.getBytes("UTF-8").length*5;
+    	
+    	//Inserts: ( length;height;width;start_p;goal_p ) to the array with ";" separator
+    	byte[]data=new byte[totalLength];
+    	byte[]temp=Integer.toString(length).getBytes("UTF-8");
+    	k=insertBytesToArray(data,temp,k,separator,0);
+    	temp=null;
+    	temp=Integer.toString(height).getBytes("UTF-8");
+    	k=insertBytesToArray(data,temp,k,separator,k);
+    	temp=null;
+    	temp=Integer.toString(width).getBytes("UTF-8");
+    	k=insertBytesToArray(data,temp,k,separator,k);
+    	temp=null;
+    	temp=start_p.toString().getBytes("UTF-8");
+    	k=insertBytesToArray(data,temp,k,separator,k);
+    	temp=null;
+    	temp=goal_p.toString().getBytes("UTF-8");
+    	k=insertBytesToArray(data,temp,k,separator,k);
+    	
+    	
+    	//Inserts the maze itself to the array
+    	for(int y1=0;y1<height;y1++)
+    	{
+    		for(int x1=0;x1<length;x1++)
+    		{
+    			for(int z1=0;z1<width;z1++)
+    			{
+    				data[k]=(byte) maze3d[x1][y1][z1];
+    				k++;
+    			}
+    		}
+    	}
+		return data;
+    }
+    
+    /**
+     * Inserts bytes from toInsert array to data array
+     * @param data - Bytes array where to insert
+     * @param toInsert - Bytes array to insert
+     * @param start - Start index from where to start inserting
+     * @param separator - Separator needed to separate between different data types
+     * @return A new start index after inserting the data
+     * @throws UnsupportedEncodingException 
+     */
+    private int insertBytesToArray(byte[]data,byte[]toInsert,int start,String separator,int currentLength) throws UnsupportedEncodingException
+    {
+    	int totalLength=currentLength;
+    	for(int i=0;i<toInsert.length;i++)
+    	{
+    		data[start+i]=toInsert[i];
+    		totalLength++;
+    	}
+    	
+    	byte[]temp=separator.getBytes("UTF-8");
+    	for(int i=0;i<temp.length;i++)
+    	{
+    		data[start+toInsert.length+i]=temp[i];
+    		totalLength++;
+    	}
+    	return totalLength;
     }
 }

@@ -1,0 +1,9 @@
+1) Download the release you want. 
+
+2) Open a new project in Eclipse.
+
+3) Import --> General --> File System
+
+4) Select all
+
+Done.

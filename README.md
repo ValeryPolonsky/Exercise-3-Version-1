@@ -6,3 +6,5 @@ Finished: Compressors & Decompressors completly;
 Started: Part C = MVC
 <p>
 Goals: Finish MVC + Proper Java Doc & Comments
+### Exercise-3-Version-1.04
+Finished MVC.

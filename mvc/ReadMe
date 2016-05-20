@@ -1,1 +1,6 @@
-Latest MVC is the final one.
+MVC done.
+
+Generic command: Command<T>
+Fully working commands.
+Better GUI.
+User input checks included.
